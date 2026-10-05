@@ -26,7 +26,7 @@ The main goals are to:
 ## Repository structure
 
 ```text
-kim-open-quantum-reproduction/
+open-quantum-systems-digital-simulation/
 │
 ├── README.md
 ├── requirements.txt
@@ -40,10 +40,12 @@ kim-open-quantum-reproduction/
 │   └── 06_extension.ipynb
 │
 ├── figures/
+│   ├── 01_exact_lindblad_dynamics.png
 │   ├── 02_msse_figure1_reproduction.png
 │   ├── 03_digital_simulation_validation.png
 │   ├── 04_timestep_convergence.png
-│   └── 05_timestep_noise_tradeoff.png
+│   ├── 05_timestep_noise_tradeoff.png
+│   └── 06_optimal_timestep_vs_noise.png
 │
 └── data/
     └── notebook04_results.npz
@@ -70,9 +72,9 @@ This notebook establishes the operator conventions used in later simulations.
 
 ### 02 — Two-spin closed-system dynamics
 
-Builds the two-spin transverse Ising Hamiltonian
+Builds the two-spin transverse Ising Hamiltonian:
 
-$$
+```math
 H
 =
 -J\,\sigma_z^{(1)}\sigma_z^{(2)}
@@ -83,7 +85,7 @@ H
 +
 \sigma_x^{(2)}
 \right)
-$$
+```
 
 and studies unitary time evolution under the Schrödinger equation.
 
@@ -93,9 +95,9 @@ This provides the closed-system reference before environmental effects are intro
 
 ### 03 — Lindblad dynamics and QuTiP
 
-Extends the system to an open quantum system using the Lindblad master equation,
+Extends the system to an open quantum system using the Lindblad master equation:
 
-$$
+```math
 \frac{d\rho}{dt}
 =
 -i[H,\rho]
@@ -109,8 +111,8 @@ L_{\ell}\rho L_{\ell}^{\dagger}
 L_{\ell}^{\dagger}L_{\ell},
 \rho
 \right\}
-\right).
-$$
+\right)
+```
 
 The notebook covers:
 
@@ -131,23 +133,21 @@ This notebook reproduces the paper's optimised stochastic simulation for the two
 
 The Lindblad evolution is unravelled into stochastic pure-state trajectories and approximated using the modified stochastic Schrödinger equation.
 
-The Hamiltonian evolution is split as
+The Hamiltonian evolution is split as:
 
-$$
+```math
 e^{-i(1-x)H\Delta t}
-\,
-\mathcal{D}
-\,
-e^{-ixH\Delta t},
-$$
+\,\mathcal{D}\,
+e^{-ixH\Delta t}
+```
 
 where the parameter $x$ controls the ordering between coherent and dissipative evolution.
 
-For the initial state, the optimisation gives
+For the initial state, the optimisation gives:
 
-$$
-x(0)\approx 0.49057,
-$$
+```math
+x(0)\approx 0.49057
+```
 
 consistent with the value $x=0.4906$ reported in the paper.
 
@@ -162,7 +162,9 @@ RMSE, optimised x(t)     : 0.023203
 
 This confirms that the optimised ordering substantially improves the finite-timestep approximation.
 
-![MSSE reproduction](figures/02_msse_figure1_reproduction.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Temin119/open-quantum-systems-digital-simulation/main/figures/02_msse_figure1_reproduction.png" alt="MSSE reproduction" width="800">
+</p>
 
 ---
 
@@ -180,17 +182,19 @@ The implementation uses:
 
 The circuit replaces the classical random jump process with quantum measurement outcomes.
 
-The final comparison brings together
+The final comparison brings together:
 
-$$
+```math
 \text{Exact Lindblad}
 \;\longleftrightarrow\;
 \text{Classical MSSE}
 \;\longleftrightarrow\;
-\text{Digital circuit}.
-$$
+\text{Digital circuit}
+```
 
-![Digital simulation validation](figures/03_digital_simulation_validation.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Temin119/open-quantum-systems-digital-simulation/main/figures/03_digital_simulation_validation.png" alt="Digital simulation validation" width="800">
+</p>
 
 ---
 
@@ -202,56 +206,60 @@ Notebook 06 investigates a question beyond the direct reproduction:
 
 A smaller timestep improves the discretisation of the continuous-time dynamics, but it also increases the number of Trotter steps and therefore the circuit depth.
 
-For fixed final time,
+For fixed final time:
 
-$$
+```math
 N_{\text{steps}}
 \propto
-\frac{1}{\Delta t}.
-$$
+\frac{1}{\Delta t}
+```
 
 This creates a competition:
 
-$$
+```math
 \Delta t \downarrow
 \quad\Rightarrow\quad
 \text{lower discretisation error}
-$$
+```
 
-but also
+but also:
 
-$$
+```math
 \Delta t \downarrow
 \quad\Rightarrow\quad
 \text{deeper circuit}
 \quad\Rightarrow\quad
-\text{more accumulated gate noise}.
-$$
+\text{more accumulated gate noise}
+```
 
 The extension first measures timestep convergence in the noiseless simulator.
 
-![Timestep convergence](figures/04_timestep_convergence.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Temin119/open-quantum-systems-digital-simulation/main/figures/04_timestep_convergence.png" alt="Timestep convergence" width="800">
+</p>
 
 Depolarising noise is then added using the simplified model discussed in the paper:
 
 - two-qubit gate error: $p$;
 - one-qubit gate error: $p/10$.
 
-The tested values were
+The tested values were:
 
-$$
+```math
 p
 =
 0,\;
 10^{-4},\;
 10^{-3},\;
 10^{-2},\;
-3\times10^{-2}.
-$$
+3\times10^{-2}
+```
 
 The resulting error landscape shows that the preferred timestep changes as the hardware becomes noisier.
 
-![Timestep-noise trade-off](figures/05_timestep_noise_tradeoff.png)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Temin119/open-quantum-systems-digital-simulation/main/figures/05_timestep_noise_tradeoff.png" alt="Timestep-noise trade-off" width="800">
+</p>
 
 Representative results from the scan were:
 
@@ -278,7 +286,7 @@ Best tested dt    : 0.4
 Best RMSE         : 0.072239
 ```
 
-and at
+and at:
 
 ```text
 p = 0.03
@@ -296,7 +304,7 @@ This demonstrates that the mathematically finest discretisation is not necessari
 
 The project reproduces the main algorithmic chain used for the two-spin dissipative Ising example:
 
-$$
+```math
 \text{Schrödinger dynamics}
 \rightarrow
 \text{Lindblad equation}
@@ -307,8 +315,8 @@ $$
 \rightarrow
 \text{optimised ordering}
 \rightarrow
-\text{ancilla-assisted digital circuit}.
-$$
+\text{ancilla-assisted digital circuit}
+```
 
 The reproduction shows that optimising the MSSE ordering parameter strongly reduces finite-timestep error.
 
